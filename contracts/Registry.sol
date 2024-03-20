@@ -13,8 +13,7 @@ contract Registry is Ownable {
         string name;
         string description;
         string url;
-        bool availability;
-        address creator;
+        bool status;
     }
 
     mapping (address => Node) contractList;
@@ -26,7 +25,7 @@ contract Registry is Ownable {
     } 
 
     modifier  onlyOwnerOrCreator(address sender, address nodeAddress) {
-        require(sender == owner() || sender == contractList[nodeAddress].creator, "Only node creator or owner can call it.");
+        require(sender == owner() || sender == nodeAddress, "Only node creator or owner can call it.");
         _;
     }
 
@@ -40,34 +39,15 @@ contract Registry is Ownable {
     } 
 
     /**
-    * @dev Create new node. 
-    */
-    function createNode(address nodeAddress, string calldata name, string calldata description, string calldata url, bool availability) public {
-        _updateNode(nodeAddress, name, description, url, availability, msg.sender);
-    }
-
-
-    /**
     * @dev Update exist node. 
     */
-    function updateNode(address nodeAddress, string calldata name, string calldata description, string calldata url, bool availability) 
+    function updateNode(address nodeAddress, string calldata name, string calldata description, string calldata url, bool status) 
     public
     onlyOwnerOrCreator(msg.sender, nodeAddress) {
-        address creator = contractList[nodeAddress].creator;
-        _updateNode(nodeAddress, name, description, url, availability, creator);
-    }
-
-    /**
-    * @dev Modify node list. 
-    */
-    function _updateNode(address nodeAddress, string calldata name, string calldata description, string calldata url, bool availability, address creator) 
-    private 
-    {
         contractList[nodeAddress].name = name;
         contractList[nodeAddress].description = description;
         contractList[nodeAddress].url = url;
-        contractList[nodeAddress].availability = availability;
-        contractList[nodeAddress].creator = creator;
+        contractList[nodeAddress].status = status;
     }
 
 }
